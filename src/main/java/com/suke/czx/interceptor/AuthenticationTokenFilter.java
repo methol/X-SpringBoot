@@ -23,9 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @Description //TODO $
- * @Date 22:23
- * @Author yzcheng90@qq.com
+ *
  **/
 @Slf4j
 public class AuthenticationTokenFilter extends BasicAuthenticationFilter {
@@ -34,38 +32,40 @@ public class AuthenticationTokenFilter extends BasicAuthenticationFilter {
     private CustomUserDetailsService customUserDetailsService;
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public AuthenticationTokenFilter(AuthenticationManager authenticationManager,RedisTemplate template,CustomUserDetailsService customUserDetailsService) {
+    public AuthenticationTokenFilter(AuthenticationManager authenticationManager, RedisTemplate template,
+            CustomUserDetailsService customUserDetailsService) {
         super(authenticationManager);
         this.redisTemplate = template;
         this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         String token = request.getHeader(Constant.TOKEN);
-        if(StrUtil.isBlank(token) || StrUtil.equals(token,"null")){
+        if (StrUtil.isBlank(token) || StrUtil.equals(token, "null")) {
             token = request.getParameter(Constant.TOKEN);
         }
 
-        if(StrUtil.isNotBlank(token) && !StrUtil.equals(token,"null")){
+        if (StrUtil.isNotBlank(token) && !StrUtil.equals(token, "null")) {
             Object userId = redisTemplate.opsForValue().get(token);
-            if(ObjectUtil.isNull(userId)){
-                writer(response,"无效token");
+            if (ObjectUtil.isNull(userId)) {
+                writer(response, "无效token");
                 return;
             }
             UserDetails userDetails = customUserDetailsService.loadUserByUserId((Long) userId);
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
+                    null, userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);
     }
 
-
     @SneakyThrows
-    public void writer(HttpServletResponse response,String msg){
+    public void writer(HttpServletResponse response, String msg) {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write(objectMapper.writeValueAsString(R.error(HttpServletResponse.SC_UNAUTHORIZED,msg)));
+        response.getWriter().write(objectMapper.writeValueAsString(R.error(HttpServletResponse.SC_UNAUTHORIZED, msg)));
     }
 }

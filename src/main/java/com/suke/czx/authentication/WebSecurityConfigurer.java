@@ -36,9 +36,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import java.util.List;
 
 /**
- * @Description //TODO $
- * @Date 20:53
- * @Author yzcheng90@qq.com
+ *
  **/
 @Slf4j
 @Configuration
@@ -61,35 +59,42 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
         List<String> permitAll = authIgnoreConfig.getIgnoreUrls();
         permitAll.add("/actuator/**");
         permitAll.add("/error");
-        permitAll.add("/v2/**");
+        permitAll.add("/swagger-ui.html");
+        permitAll.add("/swagger-ui/**");
+        permitAll.add("/v3/api-docs/**");
         permitAll.add(Constant.TOKEN_ENTRY_POINT_URL);
         String[] urls = permitAll.stream().distinct().toArray(String[]::new);
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http.authorizeRequests();
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry
+                = http.authorizeRequests();
         registry.antMatchers(urls).permitAll().anyRequest().authenticated().and().csrf().disable();
         http
-            // 基于token，所以不需要session
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .headers().frameOptions().disable()
-            .and()
-            .formLogin()
-            .loginProcessingUrl(Constant.TOKEN_ENTRY_POINT_URL)
-            .successHandler(authenticationSuccessHandler())
-            .failureHandler(authenticationFailureHandler())
-            .and()
-            .logout()
-            .logoutUrl(Constant.TOKEN_LOGOUT_URL)
-            .addLogoutHandler(logoutHandler())
-            .logoutSuccessUrl("/sys/logout")
-            .permitAll()
-            .and()
-            .exceptionHandling()
-            .authenticationEntryPoint(new TokenAuthenticationFailHandler())
-            .and()
-             // 如果不用验证码，注释这个过滤器即可
-            .addFilterBefore(new ValidateCodeFilter(redisTemplate,authenticationFailureHandler()),UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new AuthenticationTokenFilter(authenticationManagerBean(),redisTemplate,customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
+                // 基于token，所以不需要session
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .headers().frameOptions().disable()
+                .and()
+                .formLogin()
+                .loginProcessingUrl(Constant.TOKEN_ENTRY_POINT_URL)
+                .successHandler(authenticationSuccessHandler())
+                .failureHandler(authenticationFailureHandler())
+                .and()
+                .logout()
+                .logoutUrl(Constant.TOKEN_LOGOUT_URL)
+                .addLogoutHandler(logoutHandler())
+                .logoutSuccessUrl("/sys/logout")
+                .permitAll()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new TokenAuthenticationFailHandler())
+                .and()
+                // 如果不用验证码，注释这个过滤器即可
+                .addFilterBefore(new ValidateCodeFilter(redisTemplate, authenticationFailureHandler()),
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterBefore(new AuthenticationTokenFilter(authenticationManagerBean(), redisTemplate,
+                        customUserDetailsService), UsernamePasswordAuthenticationFilter.class
+                );
     }
 
     @Override
@@ -99,17 +104,17 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationFailureHandler authenticationFailureHandler(){
+    public AuthenticationFailureHandler authenticationFailureHandler() {
         return new CustomAuthenticationFailHandler();
     }
 
     @Bean
-    public LogoutHandler logoutHandler(){
+    public LogoutHandler logoutHandler() {
         return new CustomLogoutSuccessHandler();
     }
 
     @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler(){
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return new CustomAuthenticationSuccessHandler();
     }
 

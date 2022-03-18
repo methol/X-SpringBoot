@@ -16,60 +16,57 @@ import java.util.Date;
 import java.util.List;
 
 
-
 /**
  * 角色
  *
  * @author czx
- * @email object_czx@163.com
- * @date 2019年4月17日
  */
 @Service
 @AllArgsConstructor
-public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper,SysRole> implements SysRoleService {
+public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements SysRoleService {
 
-	private final SysRoleMapper sysRoleMapper;
-	private final SysRoleMenuService sysRoleMenuService;
+    private final SysRoleMapper sysRoleMapper;
+    private final SysRoleMenuService sysRoleMenuService;
 
-	@Override
-	@Transactional
-	public void saveRoleMenu(SysRole role) {
-		role.setCreateTime(new Date());
-		sysRoleMapper.insert(role);
-		checkPrems(role);
-		sysRoleMenuService.saveOrUpdate(role.getRoleId(), role.getMenuIdList());
-	}
+    @Override
+    @Transactional
+    public void saveRoleMenu(SysRole role) {
+        role.setCreateTime(new Date());
+        sysRoleMapper.insert(role);
+        checkPrems(role);
+        sysRoleMenuService.saveOrUpdate(role.getRoleId(), role.getMenuIdList());
+    }
 
-	@Override
-	@Transactional
-	public void updateRoleMenu(SysRole role) {
-		sysRoleMapper.updateById(role);
-		checkPrems(role);
-		sysRoleMenuService.saveOrUpdate(role.getRoleId(), role.getMenuIdList());
-	}
+    @Override
+    @Transactional
+    public void updateRoleMenu(SysRole role) {
+        sysRoleMapper.updateById(role);
+        checkPrems(role);
+        sysRoleMenuService.saveOrUpdate(role.getRoleId(), role.getMenuIdList());
+    }
 
-	@Override
-	public List<Long> queryRoleIdList(Long createUserId) {
-		return sysRoleMapper.queryRoleIdList(createUserId);
-	}
+    @Override
+    public List<Long> queryRoleIdList(Long createUserId) {
+        return sysRoleMapper.queryRoleIdList(createUserId);
+    }
 
 
-	@Override
-	public void deleteBath(Long[] ids) {
-		baseMapper.deleteBatchIds(Arrays.asList(ids));
-	}
+    @Override
+    public void deleteBath(Long[] ids) {
+        baseMapper.deleteBatchIds(Arrays.asList(ids));
+    }
 
-	/**
-	 * 检查权限是否越权
-	 */
-	private void checkPrems(SysRole role){
-		//如果不是超级管理员，则需要判断角色的权限是否超过自己的权限
-		if(role.getCreateUserId() == Constant.SUPER_ADMIN){
-			return ;
-		}
-		List<Long> menuIdList = sysRoleMapper.queryAllMenuId(role.getCreateUserId());
-		if(!menuIdList.containsAll(role.getMenuIdList())){
-			throw new RRException("新增角色的权限，已超出你的权限范围");
-		}
-	}
+    /**
+     * 检查权限是否越权
+     */
+    private void checkPrems(SysRole role) {
+        //如果不是超级管理员，则需要判断角色的权限是否超过自己的权限
+        if (role.getCreateUserId() == Constant.SUPER_ADMIN) {
+            return;
+        }
+        List<Long> menuIdList = sysRoleMapper.queryAllMenuId(role.getCreateUserId());
+        if (!menuIdList.containsAll(role.getMenuIdList())) {
+            throw new RRException("新增角色的权限，已超出你的权限范围");
+        }
+    }
 }

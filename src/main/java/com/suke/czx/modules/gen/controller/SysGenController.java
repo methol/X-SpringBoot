@@ -10,7 +10,7 @@ import com.suke.czx.common.utils.R;
 import com.suke.czx.modules.gen.entity.GenConfig;
 import com.suke.czx.modules.gen.entity.InfoRmationSchema;
 import com.suke.czx.modules.gen.service.SysGenService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +23,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/sys/gen")
 @AllArgsConstructor
-@Api(value = "SysGenController" ,tags = "代码生成")
+@Tag(name = "SysGenController", description = "代码生成")
 public class SysGenController extends AbstractController {
 
     private final SysGenService sysGenService;
@@ -32,15 +32,16 @@ public class SysGenController extends AbstractController {
      * 列表
      */
     @ResponseBody
-    @RequestMapping(value = "/list",method = RequestMethod.GET)
-    public R list(@RequestParam Map<String, Object> params){
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public R list(@RequestParam Map<String, Object> params) {
         //查询列表数据
         QueryWrapper<InfoRmationSchema> queryWrapper = new QueryWrapper<>();
-        if(MapUtil.getStr(params,"tableName") != null){
+        if (MapUtil.getStr(params, "tableName") != null) {
             queryWrapper
-                    .like("tableName",MapUtil.getStr(params,"tableName"));
+                    .like("tableName", MapUtil.getStr(params, "tableName"));
         }
-        IPage<InfoRmationSchema> sysConfigList = sysGenService.queryTableList(mpPageConvert.<InfoRmationSchema>pageParamConvert(params),queryWrapper);
+        IPage<InfoRmationSchema> sysConfigList = sysGenService.queryTableList(
+                mpPageConvert.<InfoRmationSchema>pageParamConvert(params), queryWrapper);
         return R.ok().put("page", mpPageConvert.pageValueConvert(sysConfigList));
     }
 
@@ -48,18 +49,16 @@ public class SysGenController extends AbstractController {
      * 生成代码
      */
     @AuthIgnore
-    @RequestMapping(value = "/code",method = RequestMethod.GET)
+    @RequestMapping(value = "/code", method = RequestMethod.GET)
     public void code(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         String data = request.getParameter("data");
-        GenConfig config = new Gson().fromJson(data,GenConfig.class);
+        GenConfig config = new Gson().fromJson(data, GenConfig.class);
         byte[] zipData = sysGenService.generatorCode(config);
         response.reset();
         response.addHeader("Content-Disposition", "attachment; filename=\"x-springboot.zip\"");
         response.addHeader("X-Frame-Options", "SAMEORIGIN");
         response.addHeader("Content-Length", "" + zipData.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
-
         IOUtils.write(zipData, response.getOutputStream());
     }
 }

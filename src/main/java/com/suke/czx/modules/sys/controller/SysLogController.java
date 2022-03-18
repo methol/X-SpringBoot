@@ -7,7 +7,7 @@ import com.suke.czx.common.base.AbstractController;
 import com.suke.czx.common.utils.R;
 import com.suke.czx.modules.sys.entity.SysLog;
 import com.suke.czx.modules.sys.service.SysLogService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -23,32 +23,31 @@ import java.util.Map;
  * 系统日志
  *
  * @author czx
- * @email object_czx@163.com
  */
 @Controller
 @AllArgsConstructor
-@Api(value = "SysLogController" ,tags = "系统日志")
+@Tag(name = "SysLogController", description = "系统日志")
 @RequestMapping("/sys/log")
 public class SysLogController extends AbstractController {
-	private final SysLogService sysLogService;
+    private final SysLogService sysLogService;
 
-	/**
-	 * 列表
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/list",method = RequestMethod.GET)
-	@PreAuthorize("hasRole('sys:log:list')")
-	public R list(@RequestParam Map<String, Object> params){
-		//查询列表数据
-		QueryWrapper<SysLog> queryWrapper = new QueryWrapper<>();
-		if(MapUtil.getStr(params,"key") != null){
-			queryWrapper
-					.like("username",MapUtil.getStr(params,"key"))
-					.or()
-					.like("operation",MapUtil.getStr(params,"key"));
-		}
-		IPage<SysLog> sysLogList = sysLogService.page(mpPageConvert.<SysLog>pageParamConvert(params),queryWrapper);
-		return R.ok().put("page", mpPageConvert.pageValueConvert(sysLogList));
-	}
+    /**
+     * 列表
+     */
+    @ResponseBody
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('sys:log:list')")
+    public R list(@RequestParam Map<String, Object> params) {
+        //查询列表数据
+        QueryWrapper<SysLog> queryWrapper = new QueryWrapper<>();
+        if (MapUtil.getStr(params, "key") != null) {
+            queryWrapper
+                    .like("username", MapUtil.getStr(params, "key"))
+                    .or()
+                    .like("operation", MapUtil.getStr(params, "key"));
+        }
+        IPage<SysLog> sysLogList = sysLogService.page(mpPageConvert.<SysLog>pageParamConvert(params), queryWrapper);
+        return R.ok().put("page", mpPageConvert.pageValueConvert(sysLogList));
+    }
 
 }

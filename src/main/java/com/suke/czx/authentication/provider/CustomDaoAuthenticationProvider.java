@@ -7,15 +7,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * @author czx
- * @title: CustomDaoAuthenticationProvider
- * @projectName zhjg
- * @description: TODO
- * @date 2020/5/1515:26
  */
 public class CustomDaoAuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override
-    public void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication){
+    public void additionalAuthenticationChecks(UserDetails userDetails,
+            UsernamePasswordAuthenticationToken authentication) {
         if (authentication.getCredentials() == null) {
             throw new BadCredentialsException("认证错误");
         } else {

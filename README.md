@@ -4,9 +4,11 @@
 ![Image text](https://img.shields.io/badge/springboot-2.4.4-green.svg)
 ![Image text](https://img.shields.io/badge/MyBatis%20Plus-3.4.2-green.svg)
 
-[更新日志](https://github.com/yzcheng90/X-SpringBoot/tree/master/doc/updateLog.md) | [项目地址](https://github.com/yzcheng90)  | [SpringCloud版本](https://github.com/yzcheng90/ms) |[动态数据源](https://github.com/yzcheng90/dynamic-data-source)
+[更新日志](https://github.com/yzcheng90/X-SpringBoot/tree/master/doc/updateLog.md) | [项目地址](https://github.com/yzcheng90)
+| [SpringCloud版本](https://github.com/yzcheng90/ms) |[动态数据源](https://github.com/yzcheng90/dynamic-data-source)
 
-**项目说明** 
+**项目说明**
+
 - X-SpringBoot 是一个轻量级的Java快速开发平台，基于各大开源项目组合而来，用于快速构建中小型API、RESTful API项目，该项目已经有过多个真实项目的实践，稳定、简单、快速，使我们摆脱那些重复劳动。
 - 本项目已大量重构,精简了大量代码减少第三方依赖，最干净的脚手架。
 - 引入了lombok 大量简化了代码
@@ -18,24 +20,24 @@
 - 自定义Spring Security 支持获取token
 - 账号密码：admin/admin
 
- 
-**版本信息** 
+**版本信息**
+
 - 核心框架：Spring Boot 2.4.4
-- 安全框架：Spring Security 
+- 安全框架：Spring Security
 - 视图框架：Spring MVC 5.3.x
 - 持久层框架：MyBatis Plus 3.4.2
 - 日志管理：SLF4J 1.7、Log4j
-- 页面交互：Vue2.x 
+- 页面交互：Vue2.x
 
+**环境**
 
-**环境** 
 - jdk 1.8
 - mysql 5.7+
 - redis
 - nginx
 
+**项目结构**
 
-**项目结构** 
 ```
 X-SpringBoot
 ├─doc  
@@ -69,8 +71,11 @@ X-SpringBoot
 
 
 ```
-**部署** 
+
+**部署**
+
 - 后台部署
+
  ```
    1、 $git clone https://github.com/yzcheng90/X-SpringBoot.git
    
@@ -80,7 +85,9 @@ X-SpringBoot
    
    4、 IDEA运行Application.java，则可启动项目 http://localhost:8080
  ```
+
 - 前台部署
+
  ```
     1、 打开nginx 目录 /conf/nginx.conf 
     
@@ -114,16 +121,20 @@ X-SpringBoot
 **常见问题**
 
 1、启动报错
+
 ```
  是因为依赖没有引入  maven --> 先clear 再reimport 重新引入
 ```
+
 2、验证码获取失败
+
 ```
 1) redis没有启动
 2) nginx 没有配置好
 3) 如果部署的不是同一台机器，前台common.js中的url要改成ip
 
 ```
+
 3、数据库连接不上（mysql 5.7）
 
 ```
@@ -132,7 +143,9 @@ X-SpringBoot
 2) 如果改完了还是不行，看看你mysql版本8.0以上 须要修改pom.xml中的 mysql-connector-java 的版本
 
 ```
+
 4、启动了nginx 还是不能访问前台
+
 ```
 1) 确认一下nginx.conf 配置有没有问题
 
@@ -142,8 +155,7 @@ X-SpringBoot
 
 ```
 
-
- **最后**
+**最后**
 
 - 交流QQ群：17470566
 - 本人QQ：913624256

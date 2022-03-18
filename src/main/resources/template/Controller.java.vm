@@ -1,6 +1,7 @@
 package ${package}.${moduleName}.controller;
 
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,13 +16,13 @@ import lombok.AllArgsConstructor;
 import com.suke.czx.common.annotation.SysLog;
 import com.suke.czx.common.base.AbstractController;
 import org.springframework.security.access.prepost.PreAuthorize;
-import java.util.Arrays;
 
+import java.util.Arrays;
 
 
 /**
  * ${comments}
- * 
+ *
  * @author ${author}
  * @email ${email}
  * @date ${datetime}
@@ -29,7 +30,7 @@ import java.util.Arrays;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/${moduleName}/${pathName}")
-public class ${className}Controller  extends AbstractController {
+public class ${className}Controller extends AbstractController {
     private final  ${className}Service ${classname}Service;
 
     /**
@@ -37,10 +38,11 @@ public class ${className}Controller  extends AbstractController {
      */
     @RequestMapping("/list")
     @PreAuthorize("hasRole('${moduleName}:${pathName}:list')")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         //查询列表数据
         QueryWrapper<${className}> queryWrapper = new QueryWrapper<>();
-        IPage<${className}> sysConfigList = ${classname}Service.page(mpPageConvert.<${className}>pageParamConvert(params),queryWrapper);
+        IPage<${className}> sysConfigList = ${classname}Service.page(
+                mpPageConvert.<${className}>pageParamConvert(params), queryWrapper);
         return R.ok().put("page", mpPageConvert.pageValueConvert(sysConfigList));
     }
 
@@ -50,7 +52,7 @@ public class ${className}Controller  extends AbstractController {
      */
     @RequestMapping("/info/{${pk.attrNameMin}}")
     @PreAuthorize("hasRole('${moduleName}:${pathName}:info')")
-    public R info(@PathVariable("${pk.attrNameMin}") ${pk.attrType} ${pk.attrNameMin}){
+    public R info(@PathVariable("${pk.attrNameMin}") ${pk.attrType} ${pk.attrNameMin}) {
         return R.ok().put("${classname}", ${classname}Service.getById(${pk.attrNameMin}));
     }
 
@@ -61,8 +63,8 @@ public class ${className}Controller  extends AbstractController {
     @SysLog("新增${comments}数据")
     @RequestMapping("/save")
     @PreAuthorize("hasRole('${moduleName}:${pathName}:save')")
-    public R save(@RequestBody ${className} ${classname}){
-        ${classname}Service.save(${classname});
+    public R save(@RequestBody ${className} ${classname}) {
+            ${classname}Service.save(${classname});
         return R.ok();
     }
 
@@ -73,8 +75,8 @@ public class ${className}Controller  extends AbstractController {
     @SysLog("修改${comments}数据")
     @RequestMapping("/update")
     @PreAuthorize("hasRole('${moduleName}:${pathName}:update')")
-    public R update(@RequestBody ${className} ${classname}){
-		${classname}Service.updateById(${classname});
+    public R update(@RequestBody ${className} ${classname}) {
+            ${classname}Service.updateById(${classname});
         return R.ok();
     }
 
@@ -85,9 +87,9 @@ public class ${className}Controller  extends AbstractController {
     @SysLog("删除${comments}数据")
     @RequestMapping("/delete")
     @PreAuthorize("hasRole('${moduleName}:${pathName}:delete')")
-    public R delete(@RequestBody ${pk.attrType}[] ${pk.attrNameMin}s){
-		${classname}Service.removeByIds(Arrays.asList(${pk.attrNameMin}s));
+    public R delete(@RequestBody ${pk.attrType}[] ${pk.attrNameMin}s) {
+            ${classname}Service.removeByIds(Arrays.asList(${pk.attrNameMin}s));
         return R.ok();
     }
-	
+
 }

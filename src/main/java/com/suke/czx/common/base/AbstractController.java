@@ -11,28 +11,25 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * Controller公共组件
  *
  * @author czx
- * @email object_czx@163.com
- * @date 2016年11月9日 下午9:42:26
  */
 
 public abstract class AbstractController {
 
-	@Autowired
-	protected MPPageConvert mpPageConvert;
+    @Autowired
+    public ObjectMapper objectMapper;
+    @Autowired
+    protected MPPageConvert mpPageConvert;
 
-	@Autowired
-	public ObjectMapper objectMapper;
+    protected CustomUserDetailsUser getUser() {
+        Object object = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (object != null) {
+            return (CustomUserDetailsUser) object;
+        }
+        return null;
+    }
 
-	protected CustomUserDetailsUser getUser() {
-		Object object = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if(object != null){
-			return (CustomUserDetailsUser) object;
-		}
-		return null;
-	}
-
-	@SneakyThrows
-	protected Long getUserId() {
-		return getUser() == null ? null :getUser().getUserId();
-	}
+    @SneakyThrows
+    protected Long getUserId() {
+        return getUser() == null ? null : getUser().getUserId();
+    }
 }

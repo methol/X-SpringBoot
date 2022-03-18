@@ -3,11 +3,11 @@
 
 <mapper namespace="${package}.${moduleName}.mapper.${className}Mapper">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="${package}.${moduleName}.entity.${className}" id="${className}Map">
-#foreach($column in $columns)
-        <result property="${column.attrNameMin}" column="${column.columnName}"/>
-#end
+        #foreach($column in $columns)
+            <result property="${column.attrNameMin}" column="${column.columnName}"/>
+        #end
     </resultMap>
 
 </mapper>

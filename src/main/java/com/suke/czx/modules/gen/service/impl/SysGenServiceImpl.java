@@ -19,27 +19,29 @@ import java.util.zip.ZipOutputStream;
 
 @Service
 @AllArgsConstructor
-public class SysGenServiceImpl extends ServiceImpl<SysGenMapper,InfoRmationSchema> implements SysGenService {
+public class SysGenServiceImpl extends ServiceImpl<SysGenMapper, InfoRmationSchema> implements SysGenService {
 
     private final SysGenMapper sysGenMapper;
     private final GenUtils genUtils;
 
     @Override
     public IPage<InfoRmationSchema> queryTableList(IPage page, QueryWrapper<InfoRmationSchema> entityWrapper) {
-        return sysGenMapper.queryTableList(page,entityWrapper);
+        return sysGenMapper.queryTableList(page, entityWrapper);
     }
 
     public byte[] generatorCode(GenConfig config) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ZipOutputStream zip = new ZipOutputStream(outputStream);
 
-        for(String tableName : config.getGenTable()){
+        for (String tableName : config.getGenTable()) {
             //查询表信息
-            InfoRmationSchema table = sysGenMapper.queryTableList(new QueryWrapper<InfoRmationSchema>().eq("tableName",tableName));
+            InfoRmationSchema table = sysGenMapper.queryTableList(
+                    new QueryWrapper<InfoRmationSchema>().eq("tableName", tableName));
             //查询列信息
-            List<ColumnEntity> columns = sysGenMapper.queryColumns(new QueryWrapper<ColumnEntity>().eq("tableName",tableName));
+            List<ColumnEntity> columns = sysGenMapper.queryColumns(
+                    new QueryWrapper<ColumnEntity>().eq("tableName", tableName));
             //生成代码
-            genUtils.generatorCode(config,table, columns, zip);
+            genUtils.generatorCode(config, table, columns, zip);
         }
         IOUtils.closeQuietly(zip);
         return outputStream.toByteArray();

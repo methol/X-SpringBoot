@@ -4,7 +4,9 @@ package com.suke.czx.modules.apkversion.entity;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,8 +16,6 @@ import java.util.Date;
  * APK版本管理
  *
  * @author czx
- * @email object_czx@163.com
- * @date 2019-04-28 15:56:33
  */
 @Data
 @Builder

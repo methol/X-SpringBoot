@@ -6,10 +6,6 @@ import java.util.List;
 
 /**
  * @author czx
- * @title: RouterEntity
- * @projectName x-springboot
- * @description: TODO
- * @date 2020/7/1016:25
  */
 @Data
 public class RouterEntity {

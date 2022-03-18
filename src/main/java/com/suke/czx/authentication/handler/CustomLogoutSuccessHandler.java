@@ -14,10 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author czx
- * @title: CustomLogoutSuccessHandler
- * @projectName x-springboot
- * @description: TODO
- * @date 2019/12/2415:12
  */
 @Slf4j
 @Component

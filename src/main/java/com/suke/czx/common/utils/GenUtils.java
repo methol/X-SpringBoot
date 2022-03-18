@@ -28,13 +28,11 @@ import java.util.zip.ZipOutputStream;
  * 代码生成器   工具类
  *
  * @author czx
- * @email object_czx@163.com
- * @date 2016年12月19日 下午11:40:24
  */
 @Component
 public class GenUtils {
 
-    public List<String> getTemplates(){
+    public List<String> getTemplates() {
         List<String> templates = new ArrayList<String>();
         templates.add("template/Entity.java.vm");
         templates.add("template/Mapper.java.vm");
@@ -51,7 +49,8 @@ public class GenUtils {
     /**
      * 生成代码
      */
-    public void generatorCode(GenConfig genConfig,InfoRmationSchema table, List<ColumnEntity> columns, ZipOutputStream zip) {
+    public void generatorCode(GenConfig genConfig, InfoRmationSchema table, List<ColumnEntity> columns,
+            ZipOutputStream zip) {
         //配置信息
         Configuration config = getConfig();
         boolean hasBigDecimal = false;
@@ -66,7 +65,7 @@ public class GenUtils {
 
         //列信息
         List<ColumnEntity> columsList = new ArrayList<>();
-        for(ColumnEntity column : columns){
+        for (ColumnEntity column : columns) {
             ColumnEntity columnEntity = new ColumnEntity();
             columnEntity.setColumnName(column.getColumnName());
             columnEntity.setDataType(column.getDataType());
@@ -101,7 +100,7 @@ public class GenUtils {
 
         //设置velocity资源加载器
         Properties prop = new Properties();
-        prop.put("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader" );
+        prop.put("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
         Velocity.init(prop);
         String mainPath = genConfig.getMainPath();
         mainPath = StringUtils.isBlank(mainPath) ? "com.suke.czx" : mainPath;
@@ -128,13 +127,15 @@ public class GenUtils {
         for (String template : templates) {
             //渲染模板
             StringWriter sw = new StringWriter();
-            Template tpl = Velocity.getTemplate(template, "UTF-8" );
+            Template tpl = Velocity.getTemplate(template, "UTF-8");
             tpl.merge(context, sw);
 
             try {
                 //添加到zip
-                zip.putNextEntry(new ZipEntry(getFileName(template, tableEntity.getClassName(), genConfig.getPackagePath(), genConfig.getModuleName())));
-                IOUtils.write(sw.toString(), zip, "UTF-8" );
+                zip.putNextEntry(new ZipEntry(
+                        getFileName(template, tableEntity.getClassName(), genConfig.getPackagePath(),
+                                genConfig.getModuleName())));
+                IOUtils.write(sw.toString(), zip, "UTF-8");
                 IOUtils.closeQuietly(sw);
                 zip.closeEntry();
             } catch (IOException e) {
@@ -148,7 +149,7 @@ public class GenUtils {
      * 列名转换成Java属性名
      */
     public String columnToJava(String columnName) {
-        return WordUtils.capitalizeFully(columnName, new char[]{'_'}).replace("_", "" );
+        return WordUtils.capitalizeFully(columnName, new char[]{'_'}).replace("_", "");
     }
 
 
@@ -157,7 +158,7 @@ public class GenUtils {
      */
     public Configuration getConfig() {
         try {
-            return new PropertiesConfiguration("generator.properties" );
+            return new PropertiesConfiguration("generator.properties");
         } catch (ConfigurationException e) {
             throw new RRException("获取配置文件失败，", e);
         }
@@ -172,39 +173,42 @@ public class GenUtils {
             packagePath += packageName.replace(".", File.separator) + File.separator + moduleName + File.separator;
         }
 
-        if (template.contains("Entity.java.vm" )) {
+        if (template.contains("Entity.java.vm")) {
             return packagePath + "entity" + File.separator + className + ".java";
         }
 
-        if (template.contains("Mapper.java.vm" )) {
+        if (template.contains("Mapper.java.vm")) {
             return packagePath + "mapper" + File.separator + className + "Mapper.java";
         }
 
-        if (template.contains("Service.java.vm" )) {
+        if (template.contains("Service.java.vm")) {
             return packagePath + "service" + File.separator + className + "Service.java";
         }
 
-        if (template.contains("ServiceImpl.java.vm" )) {
+        if (template.contains("ServiceImpl.java.vm")) {
             return packagePath + "service" + File.separator + "impl" + File.separator + className + "ServiceImpl.java";
         }
 
-        if (template.contains("Controller.java.vm" )) {
+        if (template.contains("Controller.java.vm")) {
             return packagePath + "controller" + File.separator + className + "Controller.java";
         }
 
-        if (template.contains("Mapper.xml.vm" )) {
-            return "main" + File.separator + "resources" + File.separator + "mapper" + File.separator + moduleName + File.separator + className + "Mapper.xml";
+        if (template.contains("Mapper.xml.vm")) {
+            return "main" + File.separator + "resources" + File.separator + "mapper" + File.separator + moduleName
+                    + File.separator + className + "Mapper.xml";
         }
 
-        if (template.contains("list.html.vm" )) {
-            return "x-springboot-ui" + File.separator + "modules" + File.separator + moduleName + File.separator + className.toLowerCase() + ".html";
+        if (template.contains("list.html.vm")) {
+            return "x-springboot-ui" + File.separator + "modules" + File.separator + moduleName + File.separator
+                    + className.toLowerCase() + ".html";
         }
 
-        if (template.contains("list.js.vm" )) {
-            return "x-springboot-ui" + File.separator + "js" + File.separator + "modules" + File.separator + moduleName + File.separator + className.toLowerCase() + ".js";
+        if (template.contains("list.js.vm")) {
+            return "x-springboot-ui" + File.separator + "js" + File.separator + "modules" + File.separator + moduleName
+                    + File.separator + className.toLowerCase() + ".js";
         }
 
-        if (template.contains("menu.sql.vm" )) {
+        if (template.contains("menu.sql.vm")) {
             return className.toLowerCase() + "_menu.sql";
         }
 

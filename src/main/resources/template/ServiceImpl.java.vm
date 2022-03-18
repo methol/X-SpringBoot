@@ -7,8 +7,8 @@ import ${package}.${moduleName}.entity.${className};
 import ${package}.${moduleName}.service.${className}Service;
 
 
-
 @Service
-public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements ${className}Service {
-	
+public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}>
+        implements ${className}Service {
+
 }

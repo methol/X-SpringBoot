@@ -26,19 +26,19 @@ public class PermissionsServiceImpl implements PermissionsService {
         List<String> permsList;
 
         //系统管理员，拥有最高权限
-        if(userId == Constant.SUPER_ADMIN){
+        if (userId == Constant.SUPER_ADMIN) {
             List<SysMenu> menuList = sysMenuService.list();
             permsList = new ArrayList<>(menuList.size());
-            for(SysMenu menu : menuList){
+            for (SysMenu menu : menuList) {
                 permsList.add(menu.getPerms());
             }
-        }else{
+        } else {
             permsList = sysUserMapper.queryAllPerms(userId);
         }
         //用户权限列表
         Set<String> permsSet = new HashSet<>();
-        for(String perms : permsList){
-            if(StringUtils.isBlank(perms)){
+        for (String perms : permsList) {
+            if (StringUtils.isBlank(perms)) {
                 continue;
             }
             permsSet.addAll(Arrays.asList(perms.trim().split(",")));

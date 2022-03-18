@@ -5,11 +5,11 @@ import ${package}.${moduleName}.entity.${className};
 
 /**
  * ${comments}
- * 
+ *
  * @author ${author}
  * @email ${email}
  * @date ${datetime}
  */
-public interface ${className}Mapper  extends BaseMapper<${className}> {
-	
+public interface ${className}Mapper extends BaseMapper<${className}> {
+
 }

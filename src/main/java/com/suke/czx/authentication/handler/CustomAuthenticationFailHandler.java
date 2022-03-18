@@ -15,9 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
 /**
- * @Description //TODO $
- * @Date 21:05
- * @Author yzcheng90@qq.com
+ *
  **/
 @Slf4j
 @Component
@@ -27,7 +25,8 @@ public class CustomAuthenticationFailHandler implements AuthenticationFailureHan
 
     @SneakyThrows
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception){
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException exception) {
         response.setCharacterEncoding(CharsetUtil.UTF_8);
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         PrintWriter printWriter = response.getWriter();

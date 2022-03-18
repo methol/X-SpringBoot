@@ -11,15 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController extends AbstractController {
 
     /**
-     * @Author czx
-     * @Description //TODO 不需要token
-     * @Date 14:43 2019/4/19
-     * @Param []
      * @return java.lang.String
      **/
     @AuthIgnore
-    @RequestMapping(value = "/hello",method = RequestMethod.GET)
-    public String hello(){
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    public String hello() {
         return "--------------------hello";
     }
 

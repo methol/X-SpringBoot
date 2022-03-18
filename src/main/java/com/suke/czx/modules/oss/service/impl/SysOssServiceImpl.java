@@ -7,9 +7,8 @@ import com.suke.czx.modules.oss.service.SysOssService;
 import org.springframework.stereotype.Service;
 
 
-
 @Service
-public class SysOssServiceImpl extends ServiceImpl<SysOssMapper,SysOss> implements SysOssService {
+public class SysOssServiceImpl extends ServiceImpl<SysOssMapper, SysOss> implements SysOssService {
 
-	
+
 }
