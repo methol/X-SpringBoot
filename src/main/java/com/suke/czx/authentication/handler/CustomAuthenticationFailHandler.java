@@ -21,14 +21,14 @@ import java.io.PrintWriter;
 @Component
 public class CustomAuthenticationFailHandler implements AuthenticationFailureHandler {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @SneakyThrows
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException exception) {
         response.setCharacterEncoding(CharsetUtil.UTF_8);
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         PrintWriter printWriter = response.getWriter();
         printWriter.append(objectMapper.writeValueAsString(R.error(exception.getMessage())));
     }

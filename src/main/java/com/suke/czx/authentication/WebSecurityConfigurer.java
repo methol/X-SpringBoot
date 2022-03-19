@@ -32,9 +32,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +49,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     private final CustomUserDetailsService customUserDetailsService;
     private final StringRedisTemplate redisTemplate;
     private final AuthIgnoreConfig authIgnoreConfig;
+    private final CorsFilter corsFilter;
 
     @SneakyThrows
     @Override
@@ -72,7 +71,6 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 = http.authorizeRequests();
         registry.antMatchers(permitAll.toArray(String[]::new)).permitAll()
                 .anyRequest().authenticated().and()
-                .cors().and()
                 .csrf().disable();
         http
                 // 基于token，所以不需要session
@@ -96,13 +94,15 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(new TokenAuthenticationFailHandler())
                 .and()
 
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+
                 // 如果不用验证码，注释这个过滤器即可
                 .addFilterBefore(new ValidateCodeFilter(redisTemplate, authenticationFailureHandler()),
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .addFilterBefore(new AuthenticationTokenFilter(authenticationManagerBean(), redisTemplate,
-                        customUserDetailsService), UsernamePasswordAuthenticationFilter.class
-                );
+                .addFilter(new AuthenticationTokenFilter(authenticationManagerBean(), redisTemplate,
+                        customUserDetailsService))
+        ;
     }
 
     @Override
@@ -117,12 +117,12 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Bean
     public LogoutHandler logoutHandler() {
-        return new CustomLogoutSuccessHandler();
+        return new CustomLogoutSuccessHandler(redisTemplate);
     }
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new CustomAuthenticationSuccessHandler();
+        return new CustomAuthenticationSuccessHandler(redisTemplate);
     }
 
     @Bean
@@ -148,15 +148,5 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
         provider.setUserDetailsService(customUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost");
-        configuration.applyPermitDefaultValues();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }

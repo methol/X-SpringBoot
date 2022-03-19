@@ -8,7 +8,8 @@ import com.suke.czx.common.utils.Constant;
 import com.suke.czx.common.utils.R;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,11 +29,12 @@ import java.io.IOException;
 @Slf4j
 public class AuthenticationTokenFilter extends BasicAuthenticationFilter {
 
-    private RedisTemplate redisTemplate;
-    private CustomUserDetailsService customUserDetailsService;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final StringRedisTemplate redisTemplate;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AuthenticationTokenFilter(AuthenticationManager authenticationManager, RedisTemplate template,
+    public AuthenticationTokenFilter(AuthenticationManager authenticationManager,
+            StringRedisTemplate template,
             CustomUserDetailsService customUserDetailsService) {
         super(authenticationManager);
         this.redisTemplate = template;
@@ -48,12 +50,12 @@ public class AuthenticationTokenFilter extends BasicAuthenticationFilter {
         }
 
         if (StrUtil.isNotBlank(token) && !StrUtil.equals(token, "null")) {
-            Object userId = redisTemplate.opsForValue().get(token);
+            String userId = redisTemplate.opsForValue().get(token);
             if (ObjectUtil.isNull(userId)) {
                 writer(response, "无效token");
                 return;
             }
-            UserDetails userDetails = customUserDetailsService.loadUserByUserId((Long) userId);
+            UserDetails userDetails = customUserDetailsService.loadUserByUserId(NumberUtils.toLong(userId));
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
                     null, userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
