@@ -1,5 +1,6 @@
 package com.suke.czx.config;
 
+import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +22,9 @@ public class KaptchaConfig {
         Properties properties = new Properties();
         properties.put("kaptcha.border", "no");
         properties.put("kaptcha.textproducer.font.color", "black");
-        properties.put("kaptcha.textproducer.char.space", "5");
+        properties.put("kaptcha.textproducer.char.space", "4");
+        properties.put(Constants.KAPTCHA_TEXTPRODUCER_CHAR_STRING, "0123456789");
+        properties.put(Constants.KAPTCHA_TEXTPRODUCER_CHAR_LENGTH, 4);
         Config config = new Config(properties);
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
         defaultKaptcha.setConfig(config);
