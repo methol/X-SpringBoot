@@ -5,7 +5,7 @@ import com.suke.czx.common.exception.CustomAuthenticationException;
 import com.suke.czx.common.utils.Constant;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -22,15 +22,17 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class ValidateCodeFilter extends OncePerRequestFilter {
 
-    private AntPathMatcher pathMatcher = new AntPathMatcher();
-    private RedisTemplate redisTemplate;
-    private AuthenticationFailureHandler authenticationFailureHandler;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+    private final StringRedisTemplate redisTemplate;
+    private final AuthenticationFailureHandler authenticationFailureHandler;
 
-    public ValidateCodeFilter(RedisTemplate redisTemplate, AuthenticationFailureHandler authenticationFailureHandler) {
+    public ValidateCodeFilter(StringRedisTemplate redisTemplate,
+            AuthenticationFailureHandler authenticationFailureHandler) {
         this.redisTemplate = redisTemplate;
         this.authenticationFailureHandler = authenticationFailureHandler;
     }
 
+    @SuppressWarnings("NullableProblems")
     @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
@@ -45,7 +47,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
                 return;
             }
 
-            String code_key = (String) redisTemplate.opsForValue().get(Constant.NUMBER_CODE_KEY + randomStr);
+            String code_key = redisTemplate.opsForValue().get(Constant.NUMBER_CODE_KEY + randomStr);
             if (StrUtil.isEmpty(code_key)) {
                 CustomAuthenticationException exception = new CustomAuthenticationException("验证码过期");
                 authenticationFailureHandler.onAuthenticationFailure(request, response, exception);

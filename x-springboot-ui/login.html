@@ -144,11 +144,12 @@
                                             + vm.captcha + "&randomStr=" + randomStr;
                                  $.ajax({
                                             type: "POST",
+                                            crossDomain: true,
                                             url: baseURL + "token/login",
                                             data: data,
                                             dataType: "json",
                                             success: function (r) {
-                                                if (r.code == 0) {//登录成功
+                                                if (r.code === 0) {//登录成功
                                                     parent.location.href = 'index.html';
                                                 } else {
                                                     vm.error = true;

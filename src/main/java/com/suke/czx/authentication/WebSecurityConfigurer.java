@@ -10,12 +10,12 @@ import com.suke.czx.common.utils.Constant;
 import com.suke.czx.config.AuthIgnoreConfig;
 import com.suke.czx.interceptor.AuthenticationTokenFilter;
 import com.suke.czx.interceptor.ValidateCodeFilter;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -32,8 +32,12 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -42,52 +46,56 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@AllArgsConstructor
 public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-    @Autowired
-    private AuthIgnoreConfig authIgnoreConfig;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final StringRedisTemplate redisTemplate;
+    private final AuthIgnoreConfig authIgnoreConfig;
 
     @SneakyThrows
     @Override
     protected void configure(HttpSecurity http) {
-        List<String> permitAll = authIgnoreConfig.getIgnoreUrls();
+        // 允许不需要认证的接口
+        Set<String> permitAll = new HashSet<>(authIgnoreConfig.getIgnoreUrls());
+
         permitAll.add("/actuator/**");
         permitAll.add("/error");
+
+        // openapi docs
         permitAll.add("/swagger-ui.html");
         permitAll.add("/swagger-ui/**");
         permitAll.add("/v3/api-docs/**");
+
         permitAll.add(Constant.TOKEN_ENTRY_POINT_URL);
-        String[] urls = permitAll.stream().distinct().toArray(String[]::new);
+
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry
                 = http.authorizeRequests();
-        registry.antMatchers(urls).permitAll().anyRequest().authenticated().and().csrf().disable();
+        registry.antMatchers(permitAll.toArray(String[]::new)).permitAll()
+                .anyRequest().authenticated().and()
+                .cors().and()
+                .csrf().disable();
         http
                 // 基于token，所以不需要session
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .headers().frameOptions().disable()
-                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .headers().frameOptions().disable().and()
+
                 .formLogin()
                 .loginProcessingUrl(Constant.TOKEN_ENTRY_POINT_URL)
                 .successHandler(authenticationSuccessHandler())
                 .failureHandler(authenticationFailureHandler())
                 .and()
+
                 .logout()
                 .logoutUrl(Constant.TOKEN_LOGOUT_URL)
                 .addLogoutHandler(logoutHandler())
                 .logoutSuccessUrl("/sys/logout")
                 .permitAll()
                 .and()
+
                 .exceptionHandling()
                 .authenticationEntryPoint(new TokenAuthenticationFailHandler())
                 .and()
+
                 // 如果不用验证码，注释这个过滤器即可
                 .addFilterBefore(new ValidateCodeFilter(redisTemplate, authenticationFailureHandler()),
                         UsernamePasswordAuthenticationFilter.class
@@ -98,9 +106,8 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .authenticationProvider(authenticationProvider());
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authenticationProvider());
     }
 
     @Bean
@@ -141,5 +148,15 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
         provider.setUserDetailsService(customUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost");
+        configuration.applyPermitDefaultValues();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
